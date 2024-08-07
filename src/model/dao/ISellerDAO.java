@@ -6,13 +6,13 @@ import model.entities.Seller;
 
 public interface ISellerDAO {
 
-void insert(Seller obj);
+	void insertSeller(Seller obj);
 	
-	void update(Seller obj);
+	void updateSeller(Seller obj);
 	
-	void deleteById(Integer id);
+	void deleteSellerById(Integer id);
 	
-	void findById(Integer id);
+	Seller findSellerById(Integer id);
 	
 	List<Seller> findAll();
 }
