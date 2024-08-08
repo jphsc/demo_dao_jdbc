@@ -16,5 +16,5 @@ public interface ISellerDAO {
 	
 	List<Seller> findSellerByDepartment(Integer departmentId);
 	
-	List<Seller> findAll();
+	List<Seller> findAllSeller();
 }

@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,20 +26,26 @@ public class SellerDAOJDBC implements ISellerDAO{
 	
 	@Override
 	public void insertSeller(Seller obj) {
-		// TODO Auto-generated method stub
+		PreparedStatement ps = null;
+		ResultSet rs =  null;
 		
+		try {
+			ps = conn.prepareStatement("INSERT INTO seller VALUES (?, ?, ?, ?, ?)");
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
 
 	@Override
 	public void updateSeller(Seller obj) {
-		// TODO Auto-generated method stub
-		
+		PreparedStatement ps = null;
+		ResultSet rs =  null;
 	}
 
 	@Override
 	public void deleteSellerById(Integer id) {
-		// TODO Auto-generated method stub
-		
+		PreparedStatement ps = null;
+		ResultSet rs =  null;
 	}
 
 	@Override
@@ -71,9 +78,33 @@ public class SellerDAOJDBC implements ISellerDAO{
 	}
 
 	@Override
-	public List<Seller> findAll() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Seller> findAllSeller() {
+		Statement st = null;
+		ResultSet rs =  null;
+		
+		try {
+			List<Seller> sellers = new ArrayList<>();
+			Map<Integer, Department> departments = new HashMap<Integer, Department>();
+			
+			st = conn.createStatement();
+			rs = st.executeQuery("SELECT seller.*, department.Name as DepName FROM seller JOIN department ON DepartmentId = department.Id");
+			
+			while(rs.next()) {
+				Department department = departments.get(rs.getInt("DepartmentId"));
+				
+				if(department == null) {
+					department = instantiateDepartment(rs);
+					departments.put(rs.getInt("DepartmentId"), department);
+				}
+				
+				Seller seller = instantiateSeller(rs, department);
+				sellers.add(seller);
+			}
+			return sellers;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}return null;
 	}
 
 	@Override
