@@ -1,6 +1,7 @@
 package model.dao.impl;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,28 +25,78 @@ public class SellerDAOJDBC implements ISellerDAO{
 		this.conn = conn;
 	}
 	
-	@Override
 	public void insertSeller(Seller obj) {
 		PreparedStatement ps = null;
-		ResultSet rs =  null;
 		
 		try {
-			ps = conn.prepareStatement("INSERT INTO seller VALUES (?, ?, ?, ?, ?)");
+			ps = conn.prepareStatement("INSERT INTO seller (Name, Email, Birthdate, BaseSalary, DepartmentId) "
+					+ "VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			ps.setString(1, obj.getName());
+			ps.setString(2, obj.getEmail());
+			//ps.setDate(3, (Date) obj.getBirthDate());
+			ps.setDate(3, new java.sql.Date(obj.getBirthDate().getTime()));
+			ps.setDouble(4, obj.getBaseSalary());
+			ps.setInt(5, obj.getDepartment().getId());
+			
+			int rows = ps.executeUpdate();
+			
+			if(rows > 0) {
+				ResultSet rs = ps.getGeneratedKeys();
+				
+				if(rs.next()) {
+					obj.setId(rs.getInt(1));
+					System.out.println(String.format("Registros alterados: %d - Id gerado: %d", rows, rs.getInt(1)));
+				} else {
+					throw new DbException("Erro inexperado, nenhuma linha foi afetada");
+				}
+				
+				DB.closeResultset(rs);
+			}
+
 		} catch (Exception e) {
-			// TODO: handle exception
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closePreparedStatement(ps);
 		}
 	}
 
-	@Override
+	@Override // *********** REVER ESSE ***********
 	public void updateSeller(Seller obj) {
 		PreparedStatement ps = null;
-		ResultSet rs =  null;
+		
+		try {
+			ps = conn.prepareStatement("UPDATE seller "
+					+ "SET name = ?, Email =?, BirthDate = ?, BaseSalary = ?, DepartmentId = ?"
+					+ "WHERE Id = ?");
+			ps.setString(1, obj.getName());
+			ps.setString(2, obj.getEmail());
+			ps.setDate(3, (Date) obj.getBirthDate());
+			ps.setDouble(4, obj.getBaseSalary());
+			ps.setInt(5, obj.getDepartment().getId());
+			int res = ps.executeUpdate();
+			
+			System.out.println("Número de linhas afetadas: "+res);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			DB.closePreparedStatement(ps);
+		}
 	}
 
-	@Override
+	@Override // *********** REVER ESSE ***********
 	public void deleteSellerById(Integer id) {
 		PreparedStatement ps = null;
-		ResultSet rs =  null;
+		
+		try {
+			ps = conn.prepareStatement("DELETE FROM seller where id = ?");
+			ps.setInt(1, id);
+			
+			int res = ps.executeUpdate();
+			
+			System.out.println("Número de linhas afetadas: "+res);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

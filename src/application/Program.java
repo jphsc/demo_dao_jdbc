@@ -1,19 +1,20 @@
 package application;
 
-import java.util.List;
+import java.sql.Date;
 
 import model.dao.DAOFactory;
 import model.dao.ISellerDAO;
+import model.entities.Department;
 import model.entities.Seller;
 
 public class Program {
 
 	public static void main(String[] args) {
 
-		//Department obj = new Department(1, "Books");
+		Department obj = new Department(1, "Books");
 		//System.out.println(obj);
 		
-		//Seller newSeller = new Seller(21, "Bob", "bob@gmail.com", new Date(), 3000.00, obj);
+		Seller newSeller = new Seller(null, "Bob", "bob@gmail.com", new Date(0), 3000.00, obj);
 		
 		ISellerDAO sellerDao = DAOFactory.createSellerDao();
 		//sellerDao.insertSeller(newSeller);
@@ -31,11 +32,15 @@ public class Program {
 //			System.out.println(seller);
 //		}
 		
-		List<Seller> allSellers = sellerDao.findAllSeller();
+//		List<Seller> allSellers = sellerDao.findAllSeller();
+//		
+//		for(Seller seller: allSellers) {
+//			System.out.println(seller);
+//		}
 		
-		for(Seller seller: allSellers) {
-			System.out.println(seller);
-		}
+		//sellerDao.insertSeller(newSeller);
+		
+		
 		
 	}
 
