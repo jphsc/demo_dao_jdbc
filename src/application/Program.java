@@ -13,8 +13,9 @@ public class Program {
 
 		Department obj = new Department(1, "Books");
 		//System.out.println(obj);
-		
-		Seller newSeller = new Seller(null, "Bob", "bob@gmail.com", new Date(0), 3000.00, obj);
+
+		//Seller newSeller = new Seller(24, "Henry", "rafahsc@live.com", new Date(0), 7500.00, obj);
+		Seller newSeller = new Seller();
 		
 		ISellerDAO sellerDao = DAOFactory.createSellerDao();
 		//sellerDao.insertSeller(newSeller);
@@ -40,7 +41,13 @@ public class Program {
 		
 		//sellerDao.insertSeller(newSeller);
 		
-		
+		//sellerDao.deleteSellerById(22);
+		newSeller = sellerDao.findSellerById(24);
+		newSeller.setName("Henry");
+		newSeller.setEmail("rafahsc@live.com");
+		newSeller.setBaseSalary(7500.00);
+		newSeller.setBirthDate(new java.sql.Date(0));
+		sellerDao.updateSeller(newSeller);
 		
 	}
 

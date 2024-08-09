@@ -1,7 +1,6 @@
 package model.dao.impl;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -33,7 +32,6 @@ public class SellerDAOJDBC implements ISellerDAO{
 					+ "VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			ps.setString(1, obj.getName());
 			ps.setString(2, obj.getEmail());
-			//ps.setDate(3, (Date) obj.getBirthDate());
 			ps.setDate(3, new java.sql.Date(obj.getBirthDate().getTime()));
 			ps.setDouble(4, obj.getBaseSalary());
 			ps.setInt(5, obj.getDepartment().getId());
@@ -47,7 +45,7 @@ public class SellerDAOJDBC implements ISellerDAO{
 					obj.setId(rs.getInt(1));
 					System.out.println(String.format("Registros alterados: %d - Id gerado: %d", rows, rs.getInt(1)));
 				} else {
-					throw new DbException("Erro inexperado, nenhuma linha foi afetada");
+					throw new DbException("Erro inesperado, nenhuma linha foi afetada");
 				}
 				
 				DB.closeResultset(rs);
@@ -60,24 +58,29 @@ public class SellerDAOJDBC implements ISellerDAO{
 		}
 	}
 
-	@Override // *********** REVER ESSE ***********
 	public void updateSeller(Seller obj) {
 		PreparedStatement ps = null;
 		
 		try {
 			ps = conn.prepareStatement("UPDATE seller "
-					+ "SET name = ?, Email =?, BirthDate = ?, BaseSalary = ?, DepartmentId = ?"
-					+ "WHERE Id = ?");
+					+ "SET Name = ?, Email = ?, BirthDate = ?, BaseSalary = ?, DepartmentId = ? "
+					+ "WHERE Id = ? ");
 			ps.setString(1, obj.getName());
 			ps.setString(2, obj.getEmail());
-			ps.setDate(3, (Date) obj.getBirthDate());
+			ps.setDate(3, new java.sql.Date(obj.getBirthDate().getTime()));
 			ps.setDouble(4, obj.getBaseSalary());
 			ps.setInt(5, obj.getDepartment().getId());
+			ps.setInt(6, obj.getId());
 			int res = ps.executeUpdate();
 			
-			System.out.println("Número de linhas afetadas: "+res);
+			if(res > 0) {
+				System.out.println("Número de linhas afetadas: "+res);
+			} else {
+				throw new DbException("Erro inesperado, nenhum registro foi alterado!");
+			}
+			
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new DbException(e.getMessage());
 		} finally {
 			DB.closePreparedStatement(ps);
 		}
@@ -93,7 +96,12 @@ public class SellerDAOJDBC implements ISellerDAO{
 			
 			int res = ps.executeUpdate();
 			
-			System.out.println("Número de linhas afetadas: "+res);
+			if(res > 0) {
+				System.out.println(String.format("Numero de linhas afetadas: %d", res));
+			} else {
+				throw new DbException("Erro inesperado, nenhuma linha foi afetada");
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
